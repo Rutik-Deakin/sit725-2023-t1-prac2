@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Express - practical</title>
+    <style>
+        .container {
+            padding: 1rem 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .inputs {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        input, select {
+            padding: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .btn {
+            width: 50%;
+            background-color: rgb(37, 88, 88);
+            border: 2px solid rgb(37, 88, 88);
+            color:  rgb(255, 255, 255);
+            font-size: 1.2rem;
+            padding: 0.5rem 0;
+            border-radius: 0.5rem;
+        }
+
+        .btn:hover {
+            cursor: pointer;
+            background-color: white;
+            border: 2px solid rgb(37, 88, 88);
+            color: rgb(37, 88, 88);
+        }
+
+        .result_heading {
+            text-align: center;
+            border: 2px solid rgb(37, 88, 88);
+            margin-top: 1.5rem;
+            padding: 0.5rem 0;
+            color: rgb(37, 88, 88);
+            border-radius: 0.5rem;
+            width: 50%;
+        }
+
+        .result_heading_success {
+            border: 2px solid rgb(39, 255, 16);
+            background-color: rgb(39, 255, 16);;
+            color:  rgb(16, 47, 13);
+        }
+
+        .result_heading_error {
+            border: 2px solid rgb(229, 11, 11);
+            background-color: rgb(229, 11, 11);
+            color:  rgb(16, 47, 13);
+        }
+    </style>
+</head>
+
+<body>
+    <h2 style="text-align: center; color: rgb(37, 88, 88)">
+        Your server is working!
+    </h2>
+    <div class="container">
+        <div class="inputs">
+            <input id="num-1" type="text" placeholder="Enter the number 1" />
+            <input id="num-2" type="text" placeholder="Enter the number 2" />
+            <select name="operation" id="operation">
+                <option value="add">Addition</option>
+                <option value="sub">Subtraction</option>
+                <option value="mul">Multiplication</option>
+                <option value="div">Division</option>
+            </select>
+        </div>
+        <button class="btn" onclick="apiCall()">Calculate</button>
+        <h2 id= "result_heading" class="result_heading">Result: <span id="result">Waiting 😴</span></h2>
+    </div>
+</body>
+<script>
+    const apiCall = async () => {
+        const num1 = document.getElementById('num-1').value;
+        const num2 = document.getElementById('num-2').value;
+        const opr = document.getElementById('operation').value;
+        const elem = document.getElementById('result_heading');
+
+        const setSuccessClass = () => {
+            elem.classList.remove("result_heading_error");
+            elem.classList.add("result_heading_success");
+        }
+
+        const setErrorClass = () => {
+            elem.classList.remove("result_heading_success");
+            elem.classList.add("result_heading_error");
+        }
+        try {
+            const response = await fetch(`/calc?num1=${num1}&num2=${num2}&opr=${opr}`);
+            const dataObj = await response.json();
+            const resultElem = document.getElementById('result');
+            resultElem.innerHTML = dataObj.data ? dataObj.data : "😭 " + dataObj.message;
+            dataObj.statusCode == 200 ? setSuccessClass() : setErrorClass(); 
+        } catch (error) {
+            console.log("Error: ", error);
+        }
+    };
+</script>
+
+</html>
